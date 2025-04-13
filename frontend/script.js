@@ -40,6 +40,15 @@ async function handleDashboardNav() {
         },
       });
 
+      if (response.status === 401) {
+        console.log('Expired token');
+        localStorage.removeItem('token');
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const result = await response.json();
 
       if (result.success) {
@@ -52,14 +61,14 @@ async function handleDashboardNav() {
         console.log("user is not an admin");
       }
     } else if (!token) {
-      console.log("Expired or missing token")
+      console.log("Missing token");
       setTimeout(() => {
         adminLogInBtn.innerHTML = `ADMIN LOGIN`;
         adminLogInLink.setAttribute("href", "./login/admin_login.html");
       }, 500);
     }
   } catch (error) {
-    console.error('Error checking admin status:', error);
+    // console.error('Error checking admin status:', error);
     adminLogInBtn.innerHTML = `ADMIN LOGIN`;
     adminLogInLink.setAttribute('href', './login/admin_login.html');
   }
@@ -131,7 +140,7 @@ const renderAttendanceData = async (selectedDate) => {
       `;
         tableBody.appendChild(row);
       });
-      
+
       const existingMsg = attendanceDataTable.querySelector('.no-data-msg');
       if (existingMsg) existingMsg.remove();
       
