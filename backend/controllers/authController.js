@@ -6,41 +6,101 @@ require('dotenv').config();
 
 // authController.js
 
-// Check if the user is an admin
 exports.checkIfAdmin = async (req, res) => {
-  // Get the token from the Authorization header
-  const token = req.headers.authorization.split(' ')[1];
+  // 1. Validate Authorization header structure first
+  if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
+    return res.status(401).json({ 
+      success: false, 
+      message: 'Authorization header missing or malformed' 
+    });
+  }
 
-  if (!token) {
-    return res.status(401).json({ success: false, message: 'No token provided' });
+  // 2. Extract token safely
+  const token = req.headers.authorization.split(' ')[1];
+  if (!token || token.length < 50) { // Basic token length validation
+    return res.status(401).json({ 
+      success: false, 
+      message: 'Invalid token format' 
+    });
   }
 
   try {
-    // Verify the token using Firebase Admin SDK
+    // 3. Verify token with Firebase
     const decodedToken = await admin.auth().verifyIdToken(token);
-    const uid = decodedToken.uid;
+    console.log('Decoded token:', decodedToken); // Debug log
+    
+    // 4. Validate UID exists
+    if (!decodedToken.uid) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Token missing required fields' 
+      });
+    }
 
-    // Check if the user is an admin in Firestore
-    const adminSessionRef = db.collection('admin-sessions').doc(uid);
+    // 5. Check Firestore for admin status
+    const adminSessionRef = db.collection('admin-sessions').doc(decodedToken.uid);
     const adminSessionSnap = await adminSessionRef.get();
-
-    if (!adminSessionSnap.exists || !adminSessionSnap.data().isAdmin) {
-      return res.status(403).json({ success: false, message: 'Unauthorized' });
+    
+    if (!adminSessionSnap.exists) {
+      console.log('No admin record found for UID:', decodedToken.uid);
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Admin account not found' 
+      });
     }
 
-    res.json({ success: true, message: 'User is an admin' });
-  } catch (error) {
-    console.error('Admin check error:', error.message);
-    
-    // Handle specific Firebase errors
-    if (error.code === 'auth/id-token-expired') {
-      return res.status(401).json({ success: false, message: 'Token expired' });
+    if (!adminSessionSnap.data().isAdmin) {
+      console.log('User is not an admin:', decodedToken.uid);
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Insufficient privileges' 
+      });
     }
-    
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Server error during admin check' 
+
+    // 6. Success response
+    return res.json({ 
+      success: true,
+      uid: decodedToken.uid,
+      email: decodedToken.email || null 
     });
+
+  } catch (error) {
+    console.error('Admin check error:', {
+      message: error.message,
+      code: error.code,
+      stack: error.stack // Full stack trace for debugging
+    });
+
+    // Handle specific Firebase errors
+    switch (error.code) {
+      case 'auth/id-token-expired':
+        return res.status(401).json({ 
+          success: false, 
+          message: 'Session expired. Please login again.' 
+        });
+      
+      case 'auth/argument-error':
+        return res.status(401).json({ 
+          success: false, 
+          message: 'Invalid authentication token' 
+        });
+        
+      case 'auth/network-request-failed':
+        return res.status(503).json({ 
+          success: false, 
+          message: 'Authentication service unavailable' 
+        });
+        
+      default:
+        return res.status(500).json({ 
+          success: false, 
+          message: 'Internal server error',
+          // Only include details in development
+          ...(process.env.NODE_ENV === 'development' && { 
+            error: error.message 
+          })
+        });
+    }
   }
 };
 
