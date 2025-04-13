@@ -6,21 +6,63 @@
     <title>A-HUB | Attendance app</title>
     <link rel="icon" type="image/x-icon" href="logo/A-HUB 56 x 56 PX.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/css/pikaday.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <div class="header-inner">
-            <img src="logo/A-HUB 56 x 56 PX.png" alt="A-hub logo">
-            <a class="logInLink">
-                <button class="admin-login-btn">
-                    <!-- ADMIN LOGIN&nbsp;&nbsp;<i class="fa-solid fa-user"></i> -->
+    <div class="container">
+        <div class="navigation">
+            <div class="logo">
+                <img src="logo/A-HUB 56 x 56 PX.png" alt="A-hub logo">
+            </div>
+    
+            <a class="logIn-btn-link">
+                <button class="login-btn">
                 </button>
             </a>
         </div>
-    </header>
+        
+        <div class="wrapper">
+            <div class="action-bar">
+                <div>ATTENDANCE SHEET</div>
+                <div class="filter">
+                    <div class="date-input-box">
+                        <input type="text" id="datepicker" readonly />
+                    </div>
+                    <button id="refresh" class="refresh" title="refresh attendance data">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                </div>
+            </div>
+    
+            <div class="attendance-sheet">
+                <div class="spinner">
+                    <span class="loader-data"></span>
+                    <p>fetching data...</p>
+                </div>
 
-    <main>
+                <div class="table-container">
+                    <table id="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Program</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="attribution">
+            <p>&copy; 2025 | A-HUB TECHNOGIES. All rights reserved.</p>
+        </div>
+    </div>
+
+    <!-- <main>
         <div class="welcome">
             <h1>Welcome To <span class="a">A-</span><span class="hub">HUB</span> Tech</h1>
         </div>
@@ -48,7 +90,6 @@
 
         <section class="days">
             <div class="card-container" id="cardContainer">
-                <!-- Cards will be dynamically inserted here -->
             </div>
         </section>
     </main>
@@ -73,28 +114,10 @@
                 </div>
             </div>
             
-            <table id="usersTable">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Program</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-    
-                <tbody>
-                </tbody>
-            </table>
         </div>
-    </section>
+    </section> -->
 
-    <!-- <footer>
-        <div class="wrapper">
-            <p>A-HUB TECHNOLOGIES &copy; 2025. All rights reserved</p>
-        </div>
-    </footer> -->     
-
-    <!-- <script type="module" src="./app.js"></script> -->
-    <script type="module" src="./script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/pikaday.min.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>

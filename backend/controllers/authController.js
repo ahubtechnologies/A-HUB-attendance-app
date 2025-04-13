@@ -30,7 +30,17 @@ exports.checkIfAdmin = async (req, res) => {
 
     res.json({ success: true, message: 'User is an admin' });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error checking admin status', error });
+    console.error('Admin check error:', error.message);
+    
+    // Handle specific Firebase errors
+    if (error.code === 'auth/id-token-expired') {
+      return res.status(401).json({ success: false, message: 'Token expired' });
+    }
+    
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Server error during admin check' 
+    });
   }
 };
 

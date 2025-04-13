@@ -1,179 +1,171 @@
-import { formatDate, getCurrentMonth, getWeekDates } from './dateUtils.js';
+import { formatDate } from './dateUtils.js';
 import { API_BASE_URL } from './config.js';
+// import { error } from 'console';
 
-const attendanceSection = document.querySelector('.attendance');
-const closeSection = document.querySelector('.close');
-const adminLogInBtn = document.querySelector('.admin-login-btn');
-const adminLogInLink = document.querySelector('.logInLink');
+const today = new Date();
+const formattedDate = formatDate(today);
 
-adminLogInBtn.innerHTML = `ADMIN LOGIN&nbsp;&nbsp;<i class="fa-solid fa-user"></i>`;
+const picker = new Pikaday({
+  field: document.getElementById('datepicker'),
+  defaultDate: today,
+  setDefaultDate: true,
+  maxDate: today,
+  onSelect: function(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); 
+    const year = String(date.getFullYear()).slice(-2);
+    const selectedDate = `${day}/${month}/${year}`;
+
+    console.log('Date selected:', selectedDate);
+    spinner.classList.remove('hidden');
+    attendanceDataTable.classList.remove('visible');
+    renderAttendanceData(selectedDate);
+  }
+});
+
+const adminLogInBtn = document.querySelector('.login-btn');
+const adminLogInLink = document.querySelector('.logIn-btn-link');
+
+adminLogInBtn.innerHTML = `<span class="loader"></span>`;
 
 async function handleDashboardNav() {
   try {
     const token = localStorage.getItem('token');
 
-    const response = await fetch(`${API_BASE_URL}/api/auth/check-admin`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    if (token) {
+      const response = await fetch(`${API_BASE_URL}/api/auth/check-admin`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    if (result.success) {
-      // User is an admin
-      adminLogInBtn.innerHTML = `ADMIN DASHBOARD&nbsp;&nbsp;<i class="fa-solid fa-grip"></i>`;
-      adminLogInLink.setAttribute('href', './dashboard/dashboard.html');
-    } else {
-      // User is not an admin
-      adminLogInBtn.innerHTML = `ADMIN LOGIN&nbsp;&nbsp;<i class="fa-solid fa-user"></i>`;
-      adminLogInLink.setAttribute('href', './login/admin_login.html');
+      if (result.success) {
+        adminLogInBtn.innerHTML = `ADMIN DASHBOARD`;
+        adminLogInLink.setAttribute("href", "./dashboard/dashboard.html");
+        console.log("user is admin");
+      } else {
+        adminLogInBtn.innerHTML = `ADMIN LOGIN`;
+        adminLogInLink.setAttribute("href", "./login/admin_login.html");
+        console.log("user is not an admin");
+      }
+    } else if (!token) {
+      console.log("Expired or missing token")
+      setTimeout(() => {
+        adminLogInBtn.innerHTML = `ADMIN LOGIN`;
+        adminLogInLink.setAttribute("href", "./login/admin_login.html");
+      }, 500);
     }
   } catch (error) {
     console.error('Error checking admin status:', error);
-    adminLogInBtn.innerHTML = `ADMIN LOGIN&nbsp;&nbsp;<i class="fa-solid fa-user"></i>`;
+    adminLogInBtn.innerHTML = `ADMIN LOGIN`;
     adminLogInLink.setAttribute('href', './login/admin_login.html');
   }
 }
 
-// Check admin status on page load
-handleDashboardNav();
+const attendanceDataTable = document.querySelector(".table-container");
+const spinner = document.querySelector('.spinner');
 
-// Function to open the attendance section
-function openAttendance(selectedDate, selectedDay) {
-  document.querySelector('.present-month').textContent = getCurrentMonth();
-  document.querySelector('.present-date').textContent = selectedDate;
-  document.querySelector('.present-day').textContent = selectedDay;
-  renderUsers(selectedDate);
-  attendanceSection.classList.add('visible');
-}
+const renderAttendanceData = async (selectedDate) => {
+  console.log('renderAttendanceData called with date:', selectedDate);
+  console.log('Table element exists:', !!document.querySelector('#data-table tbody'));
 
-// Function to render the dates in the grid
-function renderDates() {
-  const cardContainer = document.getElementById('cardContainer');
+  attendanceDataTable.classList.remove("visible");
 
-  if (!cardContainer) {
-    return;
-  }
+  if (selectedDate) {
+    const dateParts = selectedDate.split("/");
+    const isoDate = `20${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
 
-  const currentMonth = getCurrentMonth();
-  const weekDates = getWeekDates();
-  const today = new Date();
-  const todayFormatted = formatDate(today);
+    console.log("iso date:", isoDate)
 
-  document.querySelector('.month').textContent = currentMonth;
+    const tableBody = document.querySelector("#data-table tbody");
+    tableBody.innerHTML = "";
 
-  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    try {
+      const usersResponse = await fetch(`${API_BASE_URL}/api/users`);
+      const usersData = await usersResponse.json();
 
-  weekDates.forEach((date, index) => {
-    // Create the card element
-    const card = document.createElement('div');
-    card.className = 'card';
-
-    const dateFormatted = formatDate(date);
-    if (dateFormatted === todayFormatted) {
-      card.classList.add('active');
-    }
-
-    // Create the info div
-    const info = document.createElement('div');
-    info.className = 'info';
-
-    // Create the day element
-    const dayElement = document.createElement('div');
-    dayElement.className = 'day';
-    dayElement.textContent = daysOfWeek[index];
-
-    const dateElement = document.createElement('div');
-    dateElement.className = 'date';
-    dateElement.textContent = formatDate(date);
-
-    // Append day and date to the info div
-    info.appendChild(dayElement);
-    info.appendChild(dateElement);
-
-    // Create the icon element
-    const icon = document.createElement('i');
-    icon.className = 'fa fa-angle-right';
-
-    // Append info and icon to the card
-    card.appendChild(info);
-    card.appendChild(icon);
-
-    // Append the card to the container
-    cardContainer.appendChild(card);
-
-    card.addEventListener('click', () => {
-      openAttendance(dateFormatted, daysOfWeek[index]), currentMonth;
-    });
-
-    closeSection.addEventListener('click', () => {
-      attendanceSection.classList.remove('visible');
-    });
-  });
-}
-
-// Function to render users in the table
-const renderUsers = async (selectedDate) => {
-  const dateParts = selectedDate.split('/');
-  const isoDate = `20${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`; // Convert to ISO format
-  const tableBody = document.querySelector('#usersTable tbody');
-  tableBody.innerHTML = '';
-
-  try {
-    // Fetch users and attendance data from the backend
-    const usersResponse = await fetch(`${API_BASE_URL}/api/users`);
-    const usersData = await usersResponse.json(); // Rename to avoid confusion
-
-    // Check if the response is successful and contains the users array
-    if (!usersData.success || !Array.isArray(usersData.users)) {
-      console.error('Invalid users data:', usersData);
-      return;
-    }
-
-    const attendanceResponse = await fetch(`${API_BASE_URL}/api/attendance?date=${isoDate}`);
-    const attendanceData = await attendanceResponse.json();
-
-    // Validate attendance data
-    if (!attendanceData.success || !Array.isArray(attendanceData.attendance)) {
-      console.error('Invalid attendance data:', attendanceData);
-      return;
-    }
-
-    const attendanceMap = {};
-    attendanceData.attendance.forEach((record) => {
-      attendanceMap[record.userId] = record.status;
-    });
-
-    // Render users in the table
-    usersData.users.forEach((user) => {
-      const row = document.createElement('tr');
-      const attendanceStatus = attendanceMap[user.id] || 'Not Marked';
-
-      let statusClass = '';
-      if (attendanceStatus === 'Present') {
-        statusClass = 'status-present';
-      } else if (attendanceStatus === 'Absent') {
-        statusClass = 'status-absent';
-      } else {
-        statusClass = 'status-not-marked';
+      if (!usersData.success || !Array.isArray(usersData.users)) {
+        console.error("Invalid users data:", usersData);
+        return;
       }
 
-      row.innerHTML = `
+      const attendanceResponse = await fetch(
+        `${API_BASE_URL}/api/attendance?date=${isoDate}`
+      );
+
+      const attendanceData = await attendanceResponse.json();
+
+      if (
+        !attendanceData.success ||
+        !Array.isArray(attendanceData.attendance)
+      ) {
+        console.error("Invalid attendance data:", attendanceData);
+        return;
+      }
+
+      const attendanceMap = {};
+      attendanceData.attendance.forEach((record) => {
+        attendanceMap[record.userId] = record.status;
+      });
+
+      usersData.users.forEach((user) => {
+        const row = document.createElement("tr");
+        const attendanceStatus = attendanceMap[user.id] || "Not Marked";
+
+        let statusClass = "";
+        if (attendanceStatus === "Present") {
+          statusClass = "status-present";
+        } else if (attendanceStatus === "Absent") {
+          statusClass = "status-absent";
+        } else {
+          statusClass = "status-not-marked";
+        }
+
+        row.innerHTML = `
         <td>${user.name}</td>
         <td>${user.program}</td>
         <td class="${statusClass}">${attendanceStatus}</td>
       `;
+        tableBody.appendChild(row);
+      });
+      
+      const existingMsg = attendanceDataTable.querySelector('.no-data-msg');
+      if (existingMsg) existingMsg.remove();
+      
+      if (usersData.users.length === 0) {
+        
+        const noDataMsg = document.createElement("div");
+        noDataMsg.setAttribute("class", "no-data-msg");
+        noDataMsg.textContent = "No data";
+        attendanceDataTable.appendChild(noDataMsg);
+      }
 
-      tableBody.appendChild(row);
-    });
-  } catch (error) {
-    console.error('Error rendering users:', error);
+      attendanceDataTable.classList.add("visible");
+      setTimeout(() => {
+        spinner.classList.add("hidden");
+      }, 200);
+    } catch (error) {
+      console.error("Error rendering users:", error);
+    }
   }
 };
 
-// Render dates on page load
+document.getElementById("refresh").addEventListener("click", () => {
+  const currentDate = picker.getDate();
+  const formattedDate = currentDate ? [
+    String(currentDate.getDate()).padStart(2, '0'),
+    String(currentDate.getMonth() + 1).padStart(2, '0'),
+    String(currentDate.getFullYear()).slice(-2)
+  ].join('/') : formatDate(new Date());
+  attendanceDataTable.classList.remove("visible");
+  spinner.classList.remove("hidden");
+  renderAttendanceData(formattedDate);
+});
+
 window.addEventListener('load', () => {
-  renderDates();
+  handleDashboardNav();
+  renderAttendanceData(formattedDate);
 });
