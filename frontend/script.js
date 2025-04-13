@@ -31,47 +31,46 @@ adminLogInBtn.innerHTML = `<span class="loader"></span>`;
 async function handleDashboardNav() {
   try {
     const token = localStorage.getItem('token');
-
-    if (token) {
-      const response = await fetch(`${API_BASE_URL}/api/auth/check-admin`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.status === 401) {
-        console.log('Expired token');
-        localStorage.removeItem('token');
+    if (!token) {
+      resetToLoginState();
+      return;
+    }
+    const response = await fetch(`${API_BASE_URL}/api/auth/check-admin`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-
-      if (result.success) {
-        adminLogInBtn.innerHTML = `ADMIN DASHBOARD`;
-        adminLogInLink.setAttribute("href", "./dashboard/dashboard.html");
-        console.log("user is admin");
-      } else {
-        adminLogInBtn.innerHTML = `ADMIN LOGIN`;
-        adminLogInLink.setAttribute("href", "./login/admin_login.html");
-        console.log("user is not an admin");
-      }
-    } else if (!token) {
-      console.log("Missing token");
-      setTimeout(() => {
-        adminLogInBtn.innerHTML = `ADMIN LOGIN`;
-        adminLogInLink.setAttribute("href", "./login/admin_login.html");
-      }, 500);
+    });
+    if (response.status === 401) {
+      resetToLoginState();
+      return;
+    }
+    if (!response.ok) {
+      throw new Error(`Admin check failed with status: ${response.status}`);
+    }
+    const result = await response.json();
+    if (result.success) {
+      setAdminState();
+    } else {
+      resetToLoginState();
     }
   } catch (error) {
-    // console.error('Error checking admin status:', error);
-    adminLogInBtn.innerHTML = `ADMIN LOGIN`;
-    adminLogInLink.setAttribute('href', './login/admin_login.html');
+    console.error('Admin check error:', error);
+    showErrorNotification('Failed to verify admin status');
+    resetToLoginState();
   }
+}
+
+function resetToLoginState() {
+  localStorage.removeItem('token');
+  adminLogInBtn.innerHTML = `ADMIN LOGIN`;
+  adminLogInLink.href = "./login/admin_login.html";
+}
+
+function setAdminState() {
+  adminLogInBtn.innerHTML = `ADMIN DASHBOARD`;
+  adminLogInLink.href = "./dashboard/dashboard.html";
 }
 
 const attendanceDataTable = document.querySelector(".table-container");
