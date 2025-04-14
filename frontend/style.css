@@ -92,6 +92,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
 }
 
 .action-bar span {
@@ -218,4 +219,18 @@ body {
     text-align: center;
     color: #444;
     font-size: 0.85em;
+}
+
+@media screen and (max-width: 768px) {
+    .container {
+        margin: 10px;
+        padding: 15px;
+        height: 97dvh;
+    }
+    .table-container {
+        height: 100%;
+    }
+    .action-bar input {
+        width: 125px;
+    }
 }
