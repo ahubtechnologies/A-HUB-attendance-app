@@ -1,183 +1,198 @@
-button {
-    cursor: pointer;
-}
-
-main {
-    margin: 50px auto;
-    max-width: 1024px;
-}
-
-.heading {
-    font-size: 2em;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Body styling*/
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f8;
+    color: #333;
+    padding: 2rem;
+  }
+  
+  /* Heading */
+  .heading {
     text-align: center;
-    margin-bottom: 30px;
-}
-
-.heading span {
-    color: #673cc2;
-    font-weight: bolder;
-}
-
-.top-bar{
-    margin-bottom: 20px;
+    margin-bottom: 2rem;
+  }
+  
+  .heading h2 {
+    font-size: 2rem;
+  }
+  
+  .heading span {
+    color: #d29d4f;
+    font-weight: bold;
+  }
+  
+  /* Top Bar */
+  .top-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.top-bar button {
-    padding: 10px 20px;
-    background-color: #ff8c00;
-    color: #fff;
-    border-radius: 5px;
-}
-
-.date-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.date-wrapper hr {
-    width: 3px;
-    height: 35px;
-    background-color: #000;
-}
-
-.date-wrapper .month {
-    text-transform: uppercase;
-    font-size: 2.8em;
-}
-
-.date-container {
-    line-height: 20px;
-}
-
-table {
+    background-color: #ffffff;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+  }
+  
+  .date-wrapper {
+    text-align: center;
+  }
+  
+  .month {
+    color: #1e40af;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  
+  .date-container .day {
+    font-weight: 600;
+  }
+  
+  .date-container .date {
+    color: #555;
+    font-size: 0.95rem;
+  }
+  
+  /* Add User Button */
+  .add-user {
+    background-color: #1e40af;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .add-user:hover {
+    background-color: #c17b12;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    transition: all 0.2s ease-in-out;
+  }
+  
+  /* Table Styling */
+  #usersTable {
     width: 100%;
-    background-color: #fff;
-    margin-bottom: 30px;
-}
-
-table thead {
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  #usersTable th, #usersTable td {
+    padding: 1rem;
     text-align: left;
-    background-color: #673cc2;
-    color: #fff;
-}
-
-table th, table td {
-    padding: 15px;
-}
-
-table .mark-present-btn {
-    color: #fff;
-    padding: 10px 20px;
-    background-color: #1ac625;
-}
-
-table .mark-absent-btn {
-    color: #fff;
-    padding: 10px 20px;
-    background-color: #e83428;
-}
-
-table .delete-user-btn {
-    background: none;
-    color: #e83428;
-}
-
-.nav-home {
-    text-decoration: none;
-}
-
-.actions button {
-    padding: 12px 20px;
-    color: #000;
-}
-
-.actions .nav-home button {
-    background-color: #ccc;
-}
-
-.actions .log-out-btn {
-    color: #fff;
-    background-color: #e83428;
-}
-
-.mask {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background-color: #dddddd96;
-    backdrop-filter: blur(15px);
-}
-
-section.add-user-form {
-    visibility: hidden;
-    transform: scale(0);
-    opacity: 0;
-    padding: 30px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  #usersTable th {
+    background-color: #1e40af;
+    color: white;
+  }
+  
+  #usersTable tr:hover {
+    background-color: #f1f5f9;
+  }
+  
+  /* Actions */
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+  }
+  
+  .actions button {
+    background-color: #1e3a8a;
+    color: white;
+    padding: 0.7rem 1.4rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .actions button:hover {
+    background-color: #d18d11;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  }
+  
+  /* Add User Form Section */
+  .add-user-form {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    width: 400px;
-    height: auto;
-    background-color: #fff;
-    box-shadow: 0 6px 16px #aaa;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-    transition: 0.2s ease;
-    z-index: 100;
-}
-
-section.add-user-form.visible {
-    visibility: visible;
-    transform: scale(1) translate(-50%, -50%);
-    opacity: 1;
-}
-
-section.add-user-form h6 {
-    font-size: 1em;
-    margin: 25px 0;
-}
-
-#addUserForm {
+    transform: translate(-50%, -50%) scale(0.95);
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: none;
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-#addUserForm input {
-    padding: 10px;
-    background-color: #f8f8f8;
-}
-
-#addUserForm .buttons {
-    margin-top: 15px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-#addUserForm button, #addUserForm span {
-    width: 100%;
-    padding: 15px 20px;
-    border-radius: 2px;
-}
-
-#addUserForm .submit {
-    background-color: #673cc2;
-    color: #fff;
-}
-
-#addUserForm .cancel {
+    max-width: 400px;
+  }
+  
+  .add-user-form h6 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
     text-align: center;
-    background-color: #ddd;
-    color: #e83428;
-}
+    font-weight: bold;
+  }
+  
+  .add-user-form form input {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+  
+  .add-user-form .buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .add-user-form .submit {
+    background-color: #059669;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .add-user-form .submit:hover {
+    background-color: #047857;
+  }
+  
+  .add-user-form .cancel {
+    color: #dc2626;
+    cursor: pointer;
+    font-weight: bold;
+    align-self: center;
+  }
+  
+  
+  .mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    display: none;
+  }
