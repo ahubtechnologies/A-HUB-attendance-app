@@ -1,101 +1,109 @@
-button {
-    cursor: pointer;
-}
-
-.container{
-    background-color: orange;
-    border-radius: 10px;
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25),0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22) ;
-    position: absolute;
-    width: 400px;
-    padding: 40px;
-    transform: translate(-50%, -50%);
-    box-sizing: 10px;
-    top: 50%;
-    left: 50%;
-}
-.sign-in h1 {
-    margin: 50px 0;
-    padding:0;
-    color: #222;
-    text-align: center;
-}
-.container .sign-in .user-box {
-    position: relative;
-}
-.container .sign-in .user-box input {
-    width: 100%;
-    padding: 10px 0;
-    font-size: 16px;
-    color: #444;
-    margin-bottom: 30px;
-    border: none;
-    border-bottom: 1px solid #222;
-    outline: none;
-    background: transparent;
-    transition: .2s ease;
-}
-
-.user-box input::placeholder {
-    opacity: 0;
-    transition: opacity 0.4s ease;
-}
-
-form input:focus ~ label,
-.user-box input:not(:placeholder-shown) ~ label {
-    opacity: 0;
-}
-
-.user-box input:focus::placeholder {
-    opacity: 1;
-}
-
-.container .sign-in .user-box label {
-    position: absolute;
-    top: 0;
-    left: 0%;
-    padding: 10px 0;
-    font-size: 16px;
-    color: #222;
-    pointer-events: none;
-    transition: .5s;
-}
-
-.container form .buttons {
-    margin-top: 20px;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f8;
+    color: #333;
+    padding: 2rem;
     display: flex;
+    justify-content: center;
     align-items: center;
-    justify-content: space-between;
-}
-.container form .buttons a {
-    text-decoration: none;
-    color: inherit;
-    padding: 10px;
-    gap: 10px;
-    transition: 0.2s;
-    background-color: #ff8c006b;
-    box-shadow: 0 2px 2px #4747476b;
-}
-.container form .buttons a:hover {
-    background-color: #ed82006b;
-}
-
-.container form button {
-    position: relative;
-    display: inline-block;
-    color: darkorange;
-    font-size: 13px;
-    padding: 12px 20px;
-    font-weight: 700;
-    text-decoration: none;
-    text-transform: uppercase;
-    transition: .5s;
-    letter-spacing: 4px;
-    cursor: pointer;
-}
-
-#error {
-    margin-top: 30px;
+    height: 100vh;
+  }
+  
+  .container {
+    background-color: white;
+    padding: 3rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    max-width: 400px;
+    width: 100%;
+    max-height: 80vh;
+  }
+  
+  .sign-in h1 {
     text-align: center;
-    color: #fff;
-}
+    margin-bottom: 2rem;
+    color: #1e40af;
+  }
+  
+  
+  .user-box {
+    position: relative;
+    margin-bottom: 2rem;
+  }
+  
+  .user-box input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  .sign-in span{
+    color: #c19a0c;
+  }
+  .user-box input:focus {
+    border-color: #1e40af;
+  }
+  
+  .user-box label {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  /* Buttons area */
+  .buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+  }
+  
+  .buttons a {
+    background-color: #1e3a8a;
+    color: white;
+    padding: 0.6rem 0.9rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .buttons a:hover {
+    background-color: #d18d11;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .buttons button {
+    background-color: #26066e;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .buttons button:hover {
+    background-color: #9b7b08;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  
+  #error {
+    color: #dc2626;
+    font-weight: bold;
+    margin-top: 1rem;
+    text-align: center;
+  }
